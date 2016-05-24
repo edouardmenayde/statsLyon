@@ -1,10 +1,12 @@
 {
-  "name": "statv",
+  "name": "statl",
   "private": true,
-  "version": "0.0.0",
-  "description": "a Sails application",
+  "version": "0.0.1",
+  "description": "Stat for lyon",
   "keywords": [],
   "dependencies": {
+    "api-lyon": "^0.1.1",
+    "async": "^2.0.0-rc.5",
     "ejs": "~0.8.4",
     "grunt": "0.4.2",
     "grunt-contrib-clean": "~0.5.0",
@@ -24,8 +26,8 @@
     "sails-disk": "~0.10.0"
   },
   "scripts": {
-    "debug": "node debug app.js",
-    "start": "node app.js"
+    "debug": "babel-node debug app.js",
+    "start": "babel-node app.js"
   },
   "main": "app.js",
   "repository": {
@@ -33,5 +35,8 @@
     "url": "git://github.com/krunsh/statv.git"
   },
   "author": "krunsh",
-  "license": ""
+  "license": "GPLv3",
+  "devDependencies": {
+    "babel-cli": "^6.7.5"
+  }
 }
