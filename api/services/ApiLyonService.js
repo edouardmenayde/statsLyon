@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var ApiLyon = require('api-lyon');
+const ApiLyon = require('api-lyon');
 
 module.exports = {
   get instance () {

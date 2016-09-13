@@ -20,4 +20,7 @@
  * http://sailsjs.org/#!/documentation/concepts/Routes/RouteTargetSyntax.html
  */
 
-module.exports.routes = {};
+module.exports.routes = {
+  'GET /importStations': 'StationController.import',
+  'GET /refreshStatus' : 'StatusController.update'
+};

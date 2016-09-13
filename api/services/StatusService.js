@@ -3,11 +3,11 @@
 var async = require('async');
 
 class StatusService {
-  get api () {
+  get api() {
     return ApiLyonService.instance.velov.status;
   }
 
-  importStationsStatus () {
+  importStationsStatus() {
     this.importedStationsStatus = 0;
     return new Promise((resolve, reject) => {
       this.api.get()
@@ -15,16 +15,16 @@ class StatusService {
           async.each(
             stationsStatus.values,
             (stationStatus, callback) => {
-              Station.findOne({station_id: stationStatus.number})
+              Station.findOne({stationId: stationStatus.number})
                 .then(stationFound => {
                   Status.create({
-                    station         : stationFound.id,
-                    last_update     : stationStatus.last_update,
-                    last_update_fme : stationStatus.last_update_fme,
-                    stands          : stationStatus.bike_stands,
-                    available_stands: stationStatus.available_bike_stands,
-                    available_bikes : stationStatus.available_bikes,
-                    banking         : stationStatus.banking
+                    station        : stationFound.id,
+                    lastUpdate     : stationStatus.last_update,
+                    lastUpdateFme  : stationStatus.last_update_fme,
+                    stands         : stationStatus.bike_stands,
+                    availableStands: stationStatus.available_bike_stands,
+                    availableBikes : stationStatus.available_bikes,
+                    banking        : stationStatus.banking
                   }).then(() => {
                     this.importedStationsStatus += 1;
                     sails.log.debug(`Added live status for station "${stationFound.name}" imported`);

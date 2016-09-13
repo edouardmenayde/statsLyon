@@ -8,25 +8,25 @@
 module.exports = {
 
   attributes: {
-    station         : {
+    station        : {
       model: 'station'
     },
-    last_update     : {
+    lastUpdate     : {
       type: 'date'
     },
-    last_update_fme : {
+    lastUpdateFme  : {
       type: 'date'
     },
-    stands          : {
+    stands         : {
       type: 'integer'
     },
-    available_stands: {
+    availableStands: {
       type: 'integer'
     },
-    available_bikes : {
+    availableBikes : {
       type: 'integer'
     },
-    banking         : {
+    banking        : {
       type: 'boolean'
     }
   }

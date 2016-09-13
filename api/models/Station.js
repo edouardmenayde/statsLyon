@@ -8,40 +8,40 @@
 module.exports = {
 
   attributes: {
-    station_id    : {
+    stationId   : {
       type: 'integer'
     },
-    name          : {
+    name        : {
       type: 'string'
     },
-    address       : {
+    address     : {
       type: 'string'
     },
-    location_hint : {
+    locationHint: {
       type: 'string'
     },
-    commune       : {
+    commune     : {
       model: 'commune'
     },
-    num_in_commune: {
+    numInCommune: {
       type: 'integer'
     },
-    stands        : {
+    stands      : {
       type: 'integer'
     },
-    bonus         : {
+    bonus       : {
       type: 'boolean'
     },
-    division      : {
+    division    : {
       type: 'string'
     },
-    location      : {
+    location    : {
       type: 'array'
     },
-    achievement   : {
+    achievement : {
       type: 'string'
     },
-    status        : {
+    status      : {
       collection: 'status',
       via       : 'station'
     }
