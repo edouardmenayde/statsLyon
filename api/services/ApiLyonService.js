@@ -3,7 +3,7 @@
 const ApiLyon = require('api-lyon');
 
 module.exports = {
-  get instance () {
+  get instance() {
     if (!this._instance) {
       this._instance = new ApiLyon();
     }

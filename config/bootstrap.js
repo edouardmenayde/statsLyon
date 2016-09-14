@@ -9,9 +9,21 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.bootstrap.html
  */
 
-module.exports.bootstrap = function(cb) {
+const mapping = require('./mappings/stationStatus');
 
-  // It's very important to trigger this callback method when you are finished
-  // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
+module.exports.bootstrap = function (cb) {
+
+  sails.on('lifted', () => {
+
+    const elasticsearch = ElasticSearchService.instance;
+
+    elasticsearch.indices.create(mapping, () => {
+      elasticsearch.indices.putMapping(mapping)
+        .catch(error => {
+          sails.log.error(error);
+        });
+    });
+  });
+
   cb();
 };

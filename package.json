@@ -8,6 +8,7 @@
     "api-lyon": "^0.2.1",
     "async": "^2.0.0-rc.5",
     "ejs": "~0.8.4",
+    "elasticsearch": "^11.0.1",
     "grunt": "0.4.2",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.10.1",
@@ -22,13 +23,14 @@
     "grunt-sync": "~0.0.4",
     "include-all": "~0.1.3",
     "rc": "~0.5.0",
+    "request-helpers": "^2.1.0",
     "sails": "~0.11.2",
     "sails-disk": "~0.10.0",
     "sails-mysql": "^0.11.5"
   },
   "scripts": {
-    "debug": "babel-node debug app.js",
-    "start": "babel-node app.js"
+    "debug": "node debug app.js",
+    "start": "node app.js"
   },
   "main": "app.js",
   "repository": {
@@ -36,8 +38,5 @@
     "url": "git://github.com/krunsh/statv.git"
   },
   "author": "krunsh",
-  "license": "GPLv3",
-  "devDependencies": {
-    "babel-cli": "^6.7.5"
-  }
+  "license": "GPLv3"
 }

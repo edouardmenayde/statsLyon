@@ -1,8 +1,13 @@
 'use strict';
 
-var async = require('async');
+const async = require('async');
 
 class StatusService {
+
+  get elasticsearch() {
+    return ElasticSearchService.instance;
+  }
+
   get api() {
     return ApiLyonService.instance.velov.status;
   }
@@ -15,42 +20,50 @@ class StatusService {
           async.each(
             stationsStatus.values,
             (stationStatus, callback) => {
-              Station.findOne({stationId: stationStatus.number})
-                .then(stationFound => {
-                  Status.create({
-                    station        : stationFound.id,
-                    lastUpdate     : stationStatus.last_update,
-                    lastUpdateFme  : stationStatus.last_update_fme,
-                    stands         : stationStatus.bike_stands,
-                    availableStands: stationStatus.available_bike_stands,
-                    availableBikes : stationStatus.available_bikes,
-                    banking        : stationStatus.banking
-                  }).then(() => {
-                    this.importedStationsStatus += 1;
-                    sails.log.debug(`Added live status for station "${stationFound.name}" imported`);
-                    return callback();
-                  }).catch(error => {
-                    sails.log.error(`An error occurred after ${this.importedStationsStatus} were imported`);
-                    sails.log.error(error);
-                    return callback(error);
-                  });
+              this.elasticsearch.index({
+                index: 'stationsstatus',
+                type : 'stationstatus',
+                body : {
+                  name           : stationStatus.name,
+                  commune        : stationStatus.commune,
+                  bonus          : stationStatus.bonus,
+                  address        : stationStatus.addresse1,
+                  location       : {
+                    lat: stationStatus.lat,
+                    lon: stationStatus.lng
+                  },
+                  locationHint   : stationStatus.adresse2,
+                  stationID      : stationStatus.number,
+                  available      : stationStatus.status == 'OPEN',
+                  lastUpdate     : new Date(stationStatus.last_update),
+                  lastUpdateFme  : new Date(stationStatus.last_update_fme),
+                  stands         : stationStatus.bike_stands,
+                  availableStands: stationStatus.available_bike_stands,
+                  availableBikes : stationStatus.available_bikes,
+                  banking        : stationStatus.banking
+                }
+              })
+                .then(() => {
+                  this.importedStationsStatus += 1;
+                  sails.log.debug(`Added live status for station "${stationStatus.name}" imported`);
+                  callback();
                 })
                 .catch(error => {
-                  return callback(error);
+                  callback(error);
                 });
             },
             (error) => {
               if (error) {
                 sails.log.error(`An error occurred after ${this.importedStationsStatus} were imported`);
                 sails.log.error(error);
-                return reject(error);
+                reject(error);
               }
               sails.log.info(`${this.importedStationsStatus} stations imported successfully`);
-              return resolve();
+              resolve();
             });
         })
         .catch(error => {
-          return error;
+          reject(error);
         });
     });
   }

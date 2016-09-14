@@ -11,14 +11,12 @@
  */
 
 module.exports = {
-
-  /***************************************************************************
-   * Set the default database connection for models in the development       *
-   * environment (see config/connections.js and config/models.js )           *
-   ***************************************************************************/
-
-  models: {
-    connection: 'developmentServer'
+  connections: {
+    ES: {
+      host      : 'localhost:9200',
+      log       : 'error',
+      apiVersion: '2.x'
+    }
   }
 
 };
