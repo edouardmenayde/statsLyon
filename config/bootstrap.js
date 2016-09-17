@@ -9,20 +9,35 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.bootstrap.html
  */
 
-const mapping = require('./mappings/stationStatus');
-
 module.exports.bootstrap = function (cb) {
 
   sails.on('lifted', () => {
 
-    const elasticsearch = ElasticSearchService.instance;
+    const elasticSearch = ElasticSearchService.instance;
+    const mappings      = sails.config.mappings;
 
-    elasticsearch.indices.create(mapping, () => {
-      elasticsearch.indices.putMapping(mapping)
-        .catch(error => {
-          sails.log.error(error);
-        });
-    });
+    for (let mappingName in mappings) {
+      (function () {
+
+        if (!mappings.hasOwnProperty(mappingName)) {
+          return;
+        }
+
+        var mapping = sails.config.mappings[mappingName];
+
+        elasticSearch
+          .indices
+          .create(mapping, () => {
+            elasticSearch
+              .indices
+              .putMapping(mapping)
+              .catch(error => {
+                sails.log.error(error);
+              })
+          })
+      })();
+    }
+
   });
 
   cb();

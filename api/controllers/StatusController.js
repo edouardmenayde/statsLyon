@@ -65,7 +65,7 @@ module.exports = {
       type : 'stationstatus',
       size : 0,
       body: {
-        
+
       }
     })
       .then(response => {
@@ -78,7 +78,7 @@ module.exports = {
   },
 
   update: function (req, res) {
-    StatusService.importStationsStatus()
+    VelovStationStatusService.doImport()
       .then(() => {
         res.json(200);
       })
