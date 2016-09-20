@@ -5,7 +5,6 @@ const moment = require('moment');
 
 class ImportService {
 
-
   /**
    * Construct an import service instance with given resource.
    *
@@ -62,7 +61,7 @@ class ImportService {
   }
 
   /**
-   * Commit import over data set to specified elastic search index and type.
+   * Commit import over dataSet.
    *
    * @param {Array} dataSet
    */
