@@ -1,9 +1,23 @@
 "use strict";
 
-const async = require('async');
+const async  = require('async');
+const moment = require('moment');
 
 class ImportService {
 
+
+  /**
+   * Construct an import service instance with given resource.
+   *
+   * @param {Object} resource
+   */
+  constructor(resource) {
+    this.resource = resource;
+  }
+
+  /**
+   * @returns {Object} ElasticSearch
+   */
   get elasticSearch() {
     return ElasticSearchService.instance;
   }
@@ -16,9 +30,9 @@ class ImportService {
    */
   doSingleImport(data, callback) {
     this.elasticSearch
-      .index(this.caller.getRequestObject(data))
+      .index(this.resource.getRequestObject(data))
       .then(() => {
-        sails.log.info(`Imported an item`);
+        sails.log.verbose(`[${moment(new Date()).format('DD/MM')}] [${this.resource.getImportName()}] Imported an item named ${this.resource.getItemName(data)}`);
         callback();
       })
       .catch(error => {
@@ -28,22 +42,40 @@ class ImportService {
   }
 
   /**
+   * Handle callback of async function.
+   *
+   * @param {Object} error
+   * @param {Function} resolve
+   * @param {Function} reject
+   * @returns {Function}
+   */
+  handleCallback(error, resolve, reject) {
+    const header = `[${moment(new Date()).format('DD/MM')}] [${this.resource.getImportName()}]`;
+
+    if (error) {
+      sails.log.error(`${header} Error during import of items at ${moment(new Date()).format('h:mm:ss a')}.`);
+      return reject();
+    }
+
+    sails.log.info(`${header} Done importing at ${moment(new Date()).format('h:mm:ss a')}.`);
+    resolve();
+  }
+
+  /**
    * Commit import over data set to specified elastic search index and type.
    *
-   * @param {Array} dataset
-   * @param {Object} caller
+   * @param {Array} dataSet
    */
-  execute(dataset, caller) {
-    this.caller = caller; // might not be ideal ?
-
-    async.each(dataset, this.doSingleImport.bind(this), (error) => {
-      if (error) {
-        return sails.log.error(`Error during import of items.`);
-      }
-      sails.log.info(`Done importing.`)
+  execute(dataSet) {
+    return new Promise((resolve, reject) => {
+      const header = `[${moment(new Date()).format('DD/MM')}] [${this.resource.getImportName()}]`;
+      sails.log.info(`${header} Started importing at ${moment(new Date()).format('h:mm:ss a')}.`);
+      async.each(dataSet, this.doSingleImport.bind(this), (error) => {
+        this.handleCallback.call(this, error, resolve, reject);
+      });
     });
   }
 
 }
 
-module.exports = new ImportService();
+module.exports = ImportService;

@@ -1,10 +1,13 @@
 module.exports = {
   mappings: {
     velovStationStatus: {
-      index: 'lyon',
-      type : 'velovstationstatus',
-      body : {
+      index     : 'lyon_v1',
+      type      : 'velov_station_status',
+      body      : {
         properties: {
+          createdAt: {
+            type: 'date'
+          },
           // ID of the station
           stationID      : {
             type: 'integer'

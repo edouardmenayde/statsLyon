@@ -9,6 +9,14 @@ const requestHelpers = require('request-helpers');
 
 module.exports = {
 
+  /**
+   * Handle get request.
+   *
+   * @param {Object} req
+   * @param {Object} res
+   *
+   * @returns {Function}
+   */
   index: function (req, res) {
     const parametersBlueprint = [
       {
@@ -28,8 +36,8 @@ module.exports = {
     parameters = parameters.asObject();
 
     ElasticSearchService.instance.search({
-      index: 'stationsstatus',
-      type : 'stationstatus',
+      index: 'lyon',
+      type : 'velovstationstatus',
       size : 50,
       q    : parameters.query // lastUpdate:[2016-09-14T14:00:00 TO 2016-09-14T15:05:00] AND stationID=7062
     })
@@ -41,6 +49,7 @@ module.exports = {
         res.json(500, error);
       });
   },
+
 
   stat: function (req, res) {
     const parametersBlueprint = [
@@ -60,14 +69,15 @@ module.exports = {
 
     parameters = parameters.asObject();
 
-    ElasticSearchService.instance.search({
-      index: 'stationsstatus',
-      type : 'stationstatus',
-      size : 0,
-      body: {
+    const elasticSearch = ElasticSearchService.instance;
 
-      }
-    })
+    elasticSearch
+      .search({
+        index: 'stationsstatus',
+        type : 'stationstatus',
+        size : 0,
+        body : {}
+      })
       .then(response => {
         res.json(response);
       })
@@ -77,6 +87,12 @@ module.exports = {
       });
   },
 
+  /**
+   * Fire up import for velov station status.
+   *
+   * @param {Object} req
+   * @param {Object} res
+   */
   update: function (req, res) {
     VelovStationStatusService.doImport()
       .then(() => {
@@ -84,7 +100,7 @@ module.exports = {
       })
       .catch(error => {
         res.json(500, error);
-      })
+      });
   }
 
 };

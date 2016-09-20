@@ -27,13 +27,23 @@ module.exports.bootstrap = function (cb) {
 
         elasticSearch
           .indices
-          .create(mapping, () => {
+          .create(mapping, (error, response) => {
+
+            if (error) {
+              sails.log.verbose(error);
+            }
+
+            sails.log.verbose(response);
+
             elasticSearch
               .indices
               .putMapping(mapping)
+              .then((response) => {
+                sails.log.verbose(response);
+              })
               .catch(error => {
                 sails.log.error(error);
-              })
+              });
           })
       })();
     }

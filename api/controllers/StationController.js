@@ -77,6 +77,12 @@ module.exports = {
   //     });
   // },
 
+  /**
+   * Fire up import for velov stations.
+   *
+   * @param {Object} req
+   * @param {Object} res
+   */
   import: function (req, res) {
     VelovStationService.doImport()
       .then(() => {
@@ -84,7 +90,7 @@ module.exports = {
       })
       .catch(error => {
         res.json(500, error);
-      })
+      });
   }
 
 };
