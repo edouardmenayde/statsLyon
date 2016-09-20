@@ -22,6 +22,33 @@ class ImportService {
   }
 
   /**
+   * Returns logging time.
+   *
+   * @returns {string}
+   */
+  getLoggingTime () {
+    return moment(new Date()).format('h:mm:ss a');
+  }
+
+  /**
+   * Returns logging date in format day/month.
+   *
+   * @returns {string}
+   */
+  getLoggingDate() {
+    return moment(new Date()).format('DD/MM');
+  }
+
+  /**
+   * Returns logging headers composed of day and resource name.
+   *
+   * @returns {string}
+   */
+  getLoggingHeader () {
+    return `[${this.getLoggingDate()}] [${this.resource.getImportName()}]`;
+  }
+
+  /**
    * Execute a single data import.
    *
    * @param {Object} data
@@ -31,7 +58,7 @@ class ImportService {
     this.elasticSearch
       .index(this.resource.getRequestObject(data))
       .then(() => {
-        sails.log.verbose(`[${moment(new Date()).format('DD/MM')}] [${this.resource.getImportName()}] Imported an item named ${this.resource.getItemName(data)}`);
+        sails.log.verbose(`${this.getLoggingHeader()} Imported an item named ${this.resource.getItemName(data)}`);
         callback();
       })
       .catch(error => {
@@ -49,14 +76,13 @@ class ImportService {
    * @returns {Function}
    */
   handleCallback(error, resolve, reject) {
-    const header = `[${moment(new Date()).format('DD/MM')}] [${this.resource.getImportName()}]`;
 
     if (error) {
-      sails.log.error(`${header} Error during import of items at ${moment(new Date()).format('h:mm:ss a')}.`);
+      sails.log.error(`${this.getLoggingHeader()} Error during import of items at ${this.getLoggingTime()}.`);
       return reject();
     }
 
-    sails.log.info(`${header} Done importing at ${moment(new Date()).format('h:mm:ss a')}.`);
+    sails.log.info(`${this.getLoggingHeader()} Done importing at ${this.getLoggingTime()}.`);
     resolve();
   }
 
@@ -67,11 +93,13 @@ class ImportService {
    */
   execute(dataSet) {
     return new Promise((resolve, reject) => {
-      const header = `[${moment(new Date()).format('DD/MM')}] [${this.resource.getImportName()}]`;
-      sails.log.info(`${header} Started importing at ${moment(new Date()).format('h:mm:ss a')}.`);
+
+      sails.log.info(`${this.getLoggingHeader()} Started importing at ${this.getLoggingTime()}.`);
+
       async.each(dataSet, this.doSingleImport.bind(this), (error) => {
-        this.handleCallback.call(this, error, resolve, reject);
+        this.handleCallback(error, resolve, reject);
       });
+
     });
   }
 
