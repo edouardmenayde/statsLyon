@@ -1,11 +1,11 @@
 module.exports = {
   mappings: {
     velovStationStatus: {
-      index     : 'lyon_v1',
-      type      : 'velov_station_status',
-      body      : {
+      index: 'lyon_v2',
+      type : 'velov_station_status',
+      body : {
         properties: {
-          createdAt: {
+          createdAt      : {
             type: 'date'
           },
           // ID of the station
@@ -16,13 +16,27 @@ module.exports = {
           available      : {
             type: 'boolean'
           },
-          // Commune in where the station is located
-          commune        : {
-            type: 'string'
+          // Town in where the station is located
+          town           : {
+            type    : 'string',
+            analyzer: 'standard',
+            fields  : {
+              folded: {
+                type    : 'string',
+                analyzer: 'folding'
+              }
+            }
           },
           // Name of the station
           name           : {
-            type: 'string'
+            type    : 'string',
+            analyzer: 'standard',
+            fields  : {
+              folded: {
+                type    : 'string',
+                analyzer: 'folding'
+              }
+            }
           },
           // Whether you get time bonus when riding a bike from a downhill station to a uphill station
           bonus          : {

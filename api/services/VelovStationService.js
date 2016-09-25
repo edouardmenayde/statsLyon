@@ -39,7 +39,7 @@ class VelovStationService {
         },
         locationHint: item.properties.adresse2,
         division    : item.properties.pole,
-        commune     : item.properties.commune,
+        town        : item.properties.commune,
         bonus       : item.properties.stationbonus,
         stands      : item.properties.nbbornettes,
         achievement : item.properties.achevement
@@ -53,7 +53,7 @@ class VelovStationService {
    * @param {Object} item
    * @returns {string}
    */
-  static getItemName(item) {
+  getItemName(item) {
     return item.properties.nom;
   }
 
@@ -62,7 +62,7 @@ class VelovStationService {
    *
    * @returns {string}
    */
-  static getImportName () {
+  getImportName() {
     return 'VelovStation';
   }
 
@@ -76,17 +76,19 @@ class VelovStationService {
       this.api
         .get('wfs')
         .then(stations => {
-          const importService = ImportService(this);
+          const importService = new ImportService(this);
           importService
             .execute(stations.features)
             .then(() => {
               resolve();
             })
-            .catch(() => {
+            .catch(error => {
+              sails.log.error(error);
               reject();
             });
         })
         .catch(error => {
+          sails.log.error(error);
           reject(error);
         });
     });

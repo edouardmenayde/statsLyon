@@ -11,12 +11,18 @@
  */
 
 module.exports = {
+
   connections: {
     ES: {
       host      : 'localhost:9200',
-      log       : 'error',
+      log       : ['error', 'warning' ],
       apiVersion: '2.x'
     }
+  },
+
+  cors: {
+    origin   : 'http://localhost:9000',
+    allRoutes: true
   }
 
 };

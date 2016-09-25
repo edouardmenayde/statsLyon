@@ -1,9 +1,9 @@
 module.exports = {
   mappings: {
     velovStation: {
-      index     : 'lyon_v1',
-      type      : 'velov_station',
-      body      : {
+      index: 'lyon_v2',
+      type : 'velov_station',
+      body : {
         properties: {
           createdAt    : {
             type: 'date'
@@ -12,7 +12,14 @@ module.exports = {
             type: 'integer'
           },
           name         : {
-            type: 'string'
+            type    : 'string',
+            analyzer: 'standard',
+            fields  : {
+              folded: {
+                type    : 'string',
+                analyzer: 'folding'
+              }
+            }
           },
           address      : {
             type: 'string'
@@ -20,8 +27,15 @@ module.exports = {
           location_hint: {
             type: 'string'
           },
-          commune      : {
-            type: 'string'
+          town           : {
+            type    : 'string',
+            analyzer: 'standard',
+            fields  : {
+              folded: {
+                type    : 'string',
+                analyzer: 'folding'
+              }
+            }
           },
           stands       : {
             type: 'integer'

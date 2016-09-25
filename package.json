@@ -39,5 +39,6 @@
     "url": "git://github.com/krunsh/statv.git"
   },
   "author": "krunsh",
-  "license": "GPLv3"
+  "license": "GPLv3",
+  "devDependencies": {}
 }

@@ -38,7 +38,7 @@ class VelovStationStatusService {
           lon: parseFloat(item.lng)
         },
         locationHint   : item.adresse2,
-        commune        : item.commune,
+        town           : item.commune,
         bonus          : item.bonus,
         available      : item.status == 'OPEN',
         stands         : parseInt(item.bike_stands),
@@ -86,11 +86,13 @@ class VelovStationStatusService {
             .then(() => {
               resolve();
             })
-            .catch(() => {
+            .catch(error => {
+              sails.log.error(error);
               reject();
             });
         })
         .catch(error => {
+          sails.log.error(error);
           reject(error);
         })
     });

@@ -26,7 +26,7 @@ class ImportService {
    *
    * @returns {string}
    */
-  getLoggingTime () {
+  getLoggingTime() {
     return moment(new Date()).format('h:mm:ss a');
   }
 
@@ -44,7 +44,7 @@ class ImportService {
    *
    * @returns {string}
    */
-  getLoggingHeader () {
+  getLoggingHeader() {
     return `[${this.getLoggingDate()}] [${this.resource.getImportName()}]`;
   }
 
@@ -76,10 +76,9 @@ class ImportService {
    * @returns {Function}
    */
   handleCallback(error, resolve, reject) {
-
     if (error) {
       sails.log.error(`${this.getLoggingHeader()} Error during import of items at ${this.getLoggingTime()}.`);
-      return reject();
+      return reject(error);
     }
 
     sails.log.info(`${this.getLoggingHeader()} Done importing at ${this.getLoggingTime()}.`);
