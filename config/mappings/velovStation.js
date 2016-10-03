@@ -24,7 +24,7 @@ module.exports = {
           address      : {
             type: 'string'
           },
-          location_hint: {
+          locationHint: {
             type: 'string'
           },
           town           : {

@@ -140,27 +140,23 @@ module.exports = {
 
     const elasticSearch = ElasticSearchService.instance;
 
-    var aggregations = {};
+    const aggregations = {};
 
     const aggregationName = `extended_stats_for_${parameters.id}_with_field_${parameters.field}`;
 
     switch (parameters.statType) {
-      case 'extended_stats':
-        aggregations = {
-          aggregationName: {
-            extended_stats: {
-              field: parameters.field
-            }
+      case 'extendedStats':
+        aggregations[aggregationName] = {
+          extended_stats: {
+            field: parameters.field
           }
         };
         break;
       case 'stats':
       default:
-        aggregations = {
-          [aggregationName]: {
-            stats: {
-              field: parameters.field
-            }
+        aggregations[aggregationName] = {
+          extended_stats: {
+            field: parameters.field
           }
         };
         break;

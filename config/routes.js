@@ -24,11 +24,14 @@ module.exports.routes = {
 
   // @Todo specific endpoint for velov... ?
 
-  'GET /importStations' : 'StationController.import',
+  'GET /importStations': 'StationController.import',
+  'GET /station/import': 'StationController.import',
+  'GET /station/stat'  : 'StationController.stat',
+  'GET /station/:id'   : 'StationController.index',
+
+
   'GET /refreshStatus'  : 'StatusController.update',
-  'GET /station/:id'    : 'StationController.index',
-  'GET /station/import' : 'StationController.import',
-  'GET /status/:id'     : 'StatusController.index',
   'GET /status/update'  : 'StatusController.update',
-  'GET /status/stat/:id': 'StatusController.stat'
+  'GET /status/stat/:id': 'StatusController.stat',
+  'GET /status/:id'     : 'StatusController.index'
 };
