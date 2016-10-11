@@ -109,6 +109,35 @@ module.exports = {
       });
   },
 
+  availability: function (req, res) {
+    const velovStationStatus = sails.config.mappings.velovStationStatus;
+
+    const elasticSearch = ElasticSearchService.instance;
+
+    const aggregationName = 'overall_average_stands_availability';
+
+    elasticSearch.search({
+      index: 'lyon',
+      type : velovStationStatus.type,
+      body : {
+        aggregations: {
+          [aggregationName]: {
+            avg: {
+              field: 'available'
+            }
+          }
+        }
+      }
+    })
+      .then(response => {
+        res.ok(response.aggregations[aggregationName]);
+      })
+      .catch(error => {
+        sails.log.error(error);
+        res.serverError(500, error);
+      })
+  },
+
   stat: function (req, res) {
     const parametersBlueprint = [
       {

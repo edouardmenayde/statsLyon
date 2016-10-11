@@ -5,51 +5,65 @@ module.exports = {
       type : 'velov_station',
       body : {
         properties: {
-          createdAt    : {
+          createdAt   : {
             type: 'date'
           },
-          stationID    : {
-            type: 'integer'
-          },
-          name         : {
-            type    : 'string',
-            analyzer: 'standard',
+          stationID   : {
+            type    : 'integer',
             fields  : {
-              folded: {
+              whitespaced: {
                 type    : 'string',
-                analyzer: 'folding'
+                analyzer: 'whitespace'
               }
             }
           },
-          address      : {
+          name        : {
+            type    : 'string',
+            analyzer: 'standard',
+            fields  : {
+              folded   : {
+                type    : 'string',
+                analyzer: 'folding'
+              },
+              untouched: {
+                type : 'string',
+                index: 'not_analyzed'
+              }
+            }
+          },
+          address     : {
             type: 'string'
           },
           locationHint: {
             type: 'string'
           },
-          town           : {
+          town        : {
             type    : 'string',
             analyzer: 'standard',
             fields  : {
-              folded: {
+              folded   : {
                 type    : 'string',
                 analyzer: 'folding'
+              },
+              untouched: {
+                type : 'string',
+                index: 'not_analyzed'
               }
             }
           },
-          stands       : {
+          stands      : {
             type: 'integer'
           },
-          bonus        : {
+          bonus       : {
             type: 'boolean'
           },
-          division     : {
+          division    : {
             type: 'string'
           },
-          location     : {
+          location    : {
             type: 'geo_point'
           },
-          achievement  : {
+          achievement : {
             type: 'string'
           }
         }

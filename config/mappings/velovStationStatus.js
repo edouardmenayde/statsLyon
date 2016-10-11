@@ -21,9 +21,13 @@ module.exports = {
             type    : 'string',
             analyzer: 'standard',
             fields  : {
-              folded: {
+              folded   : {
                 type    : 'string',
                 analyzer: 'folding'
+              },
+              untouched: {
+                type : 'string',
+                index: 'not_analyzed'
               }
             }
           },
@@ -32,9 +36,13 @@ module.exports = {
             type    : 'string',
             analyzer: 'standard',
             fields  : {
-              folded: {
+              folded   : {
                 type    : 'string',
                 analyzer: 'folding'
+              },
+              untouched: {
+                type : 'string',
+                index: 'not_analyzed'
               }
             }
           },

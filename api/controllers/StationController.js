@@ -6,6 +6,7 @@
  */
 
 const requestHelpers = require('request-helpers');
+const removeAccents  = require('remove-accents');
 
 module.exports = {
 
@@ -14,7 +15,8 @@ module.exports = {
    *
    * @param req
    * @param res
-   * @returns {*}
+   *
+   * @returns {Function}
    */
   index: function (req, res) {
     const parametersBlueprint = [
@@ -71,16 +73,35 @@ module.exports = {
         });
     }
 
+    const fields = ['name.folded', 'town.folded'];
+
+    if (Number.isInteger(parseInt(parameters.query))) {
+      fields.push('stationID.whitespaced');
+    }
+
     elasticSearch.search({
       index: 'lyon',
       type : velovStation.type,
       size : 10,
       body : {
         query: {
-          multi_match: {
-            type  : 'most_fields',
-            query : parameters.query,
-            fields: ['name', 'name.folded', 'id']
+          bool: {
+            should: [
+              {
+                multi_match: {
+                  type  : 'most_fields',
+                  query : parameters.query,
+                  fields: fields
+                }
+              },
+              {
+                multi_match: {
+                  type  : 'phrase_prefix',
+                  query : parameters.query,
+                  fields: fields
+                }
+              }
+            ]
           }
         }// lastUpdate:[2016-09-14T14:00:00 TO 2016-09-14T15:05:00] AND stationID=7062
       }
@@ -95,41 +116,85 @@ module.exports = {
   },
 
   /**
+   * Get a list of different stations.
+   *
+   * @param req
+   * @param res
+   *
+   * @returns {Function}
+   */
+  differentTowns: function (req, res) {
+    const velovStation = sails.config.mappings.velovStation;
+
+    const elasticSearch = ElasticSearchService.instance;
+
+    elasticSearch.search({
+      index: 'lyon',
+      type : velovStation.type,
+      size : 0,
+      body : {
+        aggregations: {
+          differentTowns: {
+            terms: {
+              field: 'town.untouched',
+              size : 50
+            }
+          }
+        }
+      }
+    })
+      .then(response => {
+        res.ok(response.aggregations.differentTowns.buckets);
+      })
+      .catch(error => {
+        res.serverError(500, error);
+      });
+  },
+
+  /**
    * Handle stat for stations.
    *
    * @param req
    * @param res
+   *
+   * @returns {Function}
    */
   stat: function (req, res) {
+
+    const parametersBlueprint = [
+      {
+        param   : 'query',
+        required: true
+      }
+    ];
+
+    let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
+
+    if (!parameters.isValid()) {
+      return res.badRequest('No valid parameters.')
+    }
+
+    parameters = parameters.asObject();
+
+    const towns = parameters.query.split(',');
+
+    if (!Array.isArray(towns)) {
+      return res.badRequest('No valid parameters.')
+
+    }
 
     const velovStation = sails.config.mappings.velovStation;
 
     const elasticSearch = ElasticSearchService.instance;
 
-    const toSearch = {
-      ['aggs_for_lyon1']         : 'Lyon 1 er',
-      ['aggs_for_lyon2']         : 'Lyon 2 ème',
-      ['aggs_for_lyon3']         : 'Lyon 3 ème',
-      ['aggs_for_lyon4']         : 'Lyon 4 ème',
-      ['aggs_for_lyon5']         : 'Lyon 5 ème',
-      ['aggs_for_lyon6']         : 'Lyon 6 ème',
-      ['aggs_for_lyon7']         : 'Lyon 7 ème',
-      ['aggs_for_lyon8']         : 'Lyon 8 ème',
-      ['aggs_for_lyon9']         : 'Lyon 9 ème',
-      ['aggs_for_villeurbanne']  : 'Villeurbanne',
-      ['aggs_for_venissieux']    : 'Venissieux',
-      ['aggs_for_vaulxenvelin']  : 'Vaulx En Velin',
-      ['aggs_for_caluireetcuire']: 'Caluire Et Cuire'
-    };
-
     const aggregations = {};
 
-    Object.keys(toSearch).forEach(key => {
-      let matchTerm     = toSearch[key];
-      aggregations[key] = {
+    towns.forEach(town => {
+      const usableTownName         = removeAccents(town).replace(/ /g, '').toLowerCase();
+      aggregations[usableTownName] = {
         filter      : {
           match_phrase: {
-            town: matchTerm
+            'town.folded': town
           }
         },
         aggregations: {
@@ -164,6 +229,8 @@ module.exports = {
    *
    * @param {Object} req
    * @param {Object} res
+   *
+   * @returns {Function}
    */
   import: function (req, res) {
     VelovStationService.doImport()
