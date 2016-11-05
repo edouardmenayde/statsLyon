@@ -9,14 +9,6 @@ const requestHelpers = require('request-helpers');
 
 module.exports = {
 
-  /**
-   * Handle get request.
-   *
-   * @param {Object} req
-   * @param {Object} res
-   *
-   * @returns {Function}
-   */
   index: function (req, res) {
     const parametersBlueprint = [
       {
@@ -67,20 +59,22 @@ module.exports = {
             }
           ],
           query: {
-            filtered: {
-              query : {
-                range: {
-                  createdAt: {
-                    gte: parameters.from,
-                    lt : parameters.to
+            bool: {
+              must: [
+                {
+                  range: {
+                    createdAt: {
+                      gte: parameters.from,
+                      lt : parameters.to
+                    }
+                  }
+                },
+                {
+                  match: {
+                    stationID: parameters.id
                   }
                 }
-              },
-              filter: {
-                match: {
-                  stationID: parameters.id
-                }
-              }
+              ]
             }
           }
         }
@@ -197,12 +191,8 @@ module.exports = {
       size : 0,
       body : {
         query       : {
-          filtered: {
-            filter: {
-              term: {
-                stationID: parameters.id
-              }
-            }
+          term: {
+            stationID: parameters.id
           }
         },
         aggregations: aggregations
@@ -219,12 +209,6 @@ module.exports = {
       });
   },
 
-  /**
-   * Fire up import for velov station status.
-   *
-   * @param {Object} req
-   * @param {Object} res
-   */
   update: function (req, res) {
     VelovStationStatusService.doImport()
       .then(() => {

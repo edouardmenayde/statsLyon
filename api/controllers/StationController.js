@@ -10,14 +10,6 @@ const removeAccents  = require('remove-accents');
 
 module.exports = {
 
-  /**
-   * Handle get request.
-   *
-   * @param req
-   * @param res
-   *
-   * @returns {Function}
-   */
   index: function (req, res) {
     const parametersBlueprint = [
       {
@@ -51,12 +43,8 @@ module.exports = {
         size : 1,
         body : {
           query: {
-            filtered: {
-              filter: {
-                match: {
-                  stationID: parameters.id
-                }
-              }
+            match: {
+              stationID: parameters.id
             }
           }
         }
@@ -115,14 +103,6 @@ module.exports = {
       });
   },
 
-  /**
-   * Get a list of different stations.
-   *
-   * @param req
-   * @param res
-   *
-   * @returns {Function}
-   */
   differentTowns: function (req, res) {
     const velovStation = sails.config.mappings.velovStation;
 
@@ -151,14 +131,6 @@ module.exports = {
       });
   },
 
-  /**
-   * Handle stat for stations.
-   *
-   * @param req
-   * @param res
-   *
-   * @returns {Function}
-   */
   stat: function (req, res) {
 
     const parametersBlueprint = [
@@ -192,10 +164,8 @@ module.exports = {
     towns.forEach(town => {
       const usableTownName         = removeAccents(town).replace(/ /g, '').toLowerCase();
       aggregations[usableTownName] = {
-        filter      : {
-          match_phrase: {
-            'town.folded': town
-          }
+        match_phrase: {
+          'town.folded': town
         },
         aggregations: {
           sum: {
@@ -224,14 +194,6 @@ module.exports = {
       })
   },
 
-  /**
-   * Fire up import for velov stations.
-   *
-   * @param {Object} req
-   * @param {Object} res
-   *
-   * @returns {Function}
-   */
   import: function (req, res) {
     VelovStationService.doImport()
       .then(() => {

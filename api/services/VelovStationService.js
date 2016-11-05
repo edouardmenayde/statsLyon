@@ -8,7 +8,7 @@ class VelovStationService {
    * @returns {Object}
    */
   get config() {
-    return sails.config.mappings.velovStation;
+    return sails.config.mappings.indexes.lyon.velovStation;
   }
 
   /**

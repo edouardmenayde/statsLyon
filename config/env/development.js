@@ -15,8 +15,8 @@ module.exports = {
   connections: {
     ES: {
       host      : 'localhost:9200',
-      log       : ['error', 'warning'],
-      apiVersion: '2.x'
+      log       : ['error', 'warning', 'trace'],
+      apiVersion: '5.x'
     }
   },
 
