@@ -20,4 +20,21 @@
  * http://sailsjs.org/#!/documentation/concepts/Routes/RouteTargetSyntax.html
  */
 
-module.exports.routes = {};
+module.exports.routes = {
+
+  // @Todo specific endpoint for velov... ?
+
+  'GET /importStations'         : 'StationController.import',
+  'GET /station/import'         : 'StationController.import',
+  'GET /station/stat'           : 'StationController.stat',
+  'GET /station/differentTowns' : 'StationController.differentTowns',
+  'POST /station/differentTowns': 'StationController.differentTowns',
+  'GET /station/:id'            : 'StationController.index',
+
+
+  'GET /refreshStatus'      : 'StatusController.update',
+  'GET /status/update'      : 'StatusController.update',
+  'GET /status/availability': 'StatusController.availability',
+  'GET /status/stat/:id'    : 'StatusController.stat',
+  'GET /status/:id'         : 'StatusController.index'
+};

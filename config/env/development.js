@@ -12,13 +12,17 @@
 
 module.exports = {
 
-  /***************************************************************************
-   * Set the default database connection for models in the development       *
-   * environment (see config/connections.js and config/models.js )           *
-   ***************************************************************************/
+  connections: {
+    ES: {
+      host      : 'localhost:9200',
+      log       : ['error', 'warning', 'trace'],
+      apiVersion: '5.x'
+    }
+  },
 
-  // models: {
-  //   connection: 'someMongodbServer'
-  // }
+  cors: {
+    origin   : 'http://localhost:9000',
+    allRoutes: true
+  }
 
 };

@@ -1,9 +1,14 @@
 "use strict";
 
-var ApiLyon = require('api-lyon');
+const ApiLyon = require('api-lyon');
 
 module.exports = {
-  get instance () {
+  /**
+   * Returns an instance of ApiLyon.
+   *
+   * @returns {ApiLyon}
+   */
+  get instance() {
     if (!this._instance) {
       this._instance = new ApiLyon();
     }
