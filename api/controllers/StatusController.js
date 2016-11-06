@@ -6,6 +6,7 @@
  */
 
 const requestHelpers = require('request-helpers');
+const velovStationStatus = sails.config.mappings.indexes.lyon.types.velovStationStatus;
 
 module.exports = {
 
@@ -40,8 +41,6 @@ module.exports = {
     }
 
     parameters = parameters.asObject();
-
-    const velovStationStatus = sails.config.mappings.velovStationStatus;
 
     const elasticSearch = ElasticSearchService.instance;
 
@@ -104,8 +103,6 @@ module.exports = {
   },
 
   availability: function (req, res) {
-    const velovStationStatus = sails.config.mappings.velovStationStatus;
-
     const elasticSearch = ElasticSearchService.instance;
 
     const aggregationName = 'overall_average_stands_availability';
@@ -158,8 +155,6 @@ module.exports = {
     }
 
     parameters = parameters.asObject();
-
-    const velovStationStatus = sails.config.mappings.velovStationStatus;
 
     const elasticSearch = ElasticSearchService.instance;
 
