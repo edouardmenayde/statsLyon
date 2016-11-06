@@ -29,6 +29,8 @@ module.exports.bootstrap = (cb) => {
 
         sails.log.verbose(response);
 
+        console.log(mappings)
+
         async.each(mappings, (mapping, callback) => {
           elasticSearch
             .indices
