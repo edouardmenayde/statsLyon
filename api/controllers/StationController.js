@@ -7,6 +7,7 @@
 
 const requestHelpers = require('request-helpers');
 const removeAccents  = require('remove-accents');
+const velovStation = sails.config.mappings.indexes.lyon.types.velovStation;
 
 module.exports = {
 
@@ -31,8 +32,6 @@ module.exports = {
     }
 
     parameters = parameters.asObject();
-
-    const velovStation = sails.config.mappings.velovStation;
 
     const elasticSearch = ElasticSearchService.instance;
 
@@ -104,8 +103,6 @@ module.exports = {
   },
 
   differentTowns: function (req, res) {
-    const velovStation = sails.config.mappings.velovStation;
-
     const elasticSearch = ElasticSearchService.instance;
 
     elasticSearch.search({
@@ -154,8 +151,6 @@ module.exports = {
       return res.badRequest('No valid parameters.')
 
     }
-
-    const velovStation = sails.config.mappings.velovStation;
 
     const elasticSearch = ElasticSearchService.instance;
 
