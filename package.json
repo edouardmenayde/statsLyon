@@ -1,8 +1,8 @@
 {
-  "name": "statl",
+  "name": "statsLyon",
   "private": true,
   "version": "0.0.1",
-  "description": "Stat for lyon",
+  "description": "Stats for lyon",
   "keywords": [],
   "dependencies": {
     "api-lyon": "^0.2.1",
@@ -37,9 +37,9 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/krunsh/statv.git"
+    "url": "https://github.com/StatsLyon/statsLyon"
   },
-  "author": "krunsh",
+  "author": "Edouard MENAYDE",
   "license": "GPLv3",
   "devDependencies": {}
 }
