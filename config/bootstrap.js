@@ -16,7 +16,7 @@ module.exports.bootstrap = (cb) => {
   sails.on('lifted', () => {
 
     const elasticSearch = ElasticSearchService.instance;
-    const index         = sails.config.mappings.indexes.lyon;
+    const index         = sails.config.mappings.indexes.lyon.lyon;
     const mappings      = sails.config.mappings.indexes.lyon.types;
 
     elasticSearch
@@ -28,8 +28,6 @@ module.exports.bootstrap = (cb) => {
         }
 
         sails.log.verbose(response);
-
-        console.log(mappings)
 
         async.each(mappings, (mapping, callback) => {
           elasticSearch
