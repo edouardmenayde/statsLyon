@@ -25,10 +25,6 @@ before((done) => {
         index: fixtures.testIndex
       }, function (error) {
 
-        if (error) {
-          return done(error);
-        }
-
         ElasticSearchService
           .bootstrap()
           .then(() => {
