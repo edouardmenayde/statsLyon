@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const requestHelpers = require('request-helpers');
+const requestHelpers     = require('request-helpers');
 const velovStationStatus = sails.config.mappings.indexes.lyon.types.velovStationStatus;
 
 module.exports = {
@@ -13,28 +13,23 @@ module.exports = {
   index: function (req, res) {
     const parametersBlueprint = [
       {
-        param   : 'query',
-        cast    : 'string',
-        required: false
-      },
-      {
         param   : 'id',
         cast    : 'integer',
-        required: false
+        required: true
       },
       {
         param   : 'from',
         cast    : 'string',
-        required: false,
+        required: true,
       },
       {
         param   : 'to',
         cast    : 'string',
-        required: false,
+        required: true,
       }
     ];
 
-    var parameters = requestHelpers.secureParameters(parametersBlueprint, req);
+    let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
 
     if (!parameters.isValid()) {
       return res.badRequest('No valid parameters.')
@@ -44,57 +39,41 @@ module.exports = {
 
     const elasticSearch = ElasticSearchService.instance;
 
-    if (parameters.id > 0 && parameters.from && parameters.to) {
-      return elasticSearch.search({
-        index: 'lyon',
-        type : velovStationStatus.type,
-        size : 288, // (60 / 5) * 24
-        body : {
-          sort : [
-            {
-              createdAt: {
-                order: 'asc'
-              }
-            }
-          ],
-          query: {
-            bool: {
-              must: [
-                {
-                  range: {
-                    createdAt: {
-                      gte: parameters.from,
-                      lt : parameters.to
-                    }
-                  }
-                },
-                {
-                  match: {
-                    stationID: parameters.id
-                  }
-                }
-              ]
-            }
-          }
-        }
-      })
-        .then(response => {
-          res.ok(response.hits.hits || []);
-        })
-        .catch(error => {
-          sails.log.error(error);
-          res.serverError(500, error);
-        })
-    }
-
-    elasticSearch.search({
+    return elasticSearch.search({
       index: 'lyon',
       type : velovStationStatus.type,
-      size : 50,
-      q    : parameters.query // lastUpdate:[2016-09-14T14:00:00 TO 2016-09-14T15:05:00] AND stationID=7062
+      size : 288, // (60 / 5) * 24
+      body : {
+        sort : [
+          {
+            createdAt: {
+              order: 'asc'
+            }
+          }
+        ],
+        query: {
+          bool: {
+            must: [
+              {
+                range: {
+                  createdAt: {
+                    gte: parameters.from,
+                    lt : parameters.to
+                  }
+                }
+              },
+              {
+                match: {
+                  stationID: parameters.id
+                }
+              }
+            ]
+          }
+        }
+      }
     })
       .then(response => {
-        res.ok(response);
+        res.ok(response.hits.hits || []);
       })
       .catch(error => {
         sails.log.error(error);
@@ -129,26 +108,16 @@ module.exports = {
       })
   },
 
-  stat: function (req, res) {
+  availableStands: function (req, res) {
     const parametersBlueprint = [
-      {
-        param   : 'field',
-        cast    : 'string',
-        required: true
-      },
       {
         param   : 'id',
         cast    : 'integer',
         required: true
-      },
-      {
-        param   : 'statType',
-        cast    : 'string',
-        required: false
       }
     ];
 
-    var parameters = requestHelpers.secureParameters(parametersBlueprint, req);
+    let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
 
     if (!parameters.isValid()) {
       return res.badRequest('No valid parameters.')
@@ -156,31 +125,19 @@ module.exports = {
 
     parameters = parameters.asObject();
 
-    const elasticSearch = ElasticSearchService.instance;
-
-    const aggregations = {};
-
     const aggregationName = `extended_stats_for_${parameters.id}_with_field_${parameters.field}`;
 
-    switch (parameters.statType) {
-      case 'extendedStats':
-        aggregations[aggregationName] = {
-          extended_stats: {
-            field: parameters.field
-          }
-        };
-        break;
-      case 'stats':
-      default:
-        aggregations[aggregationName] = {
-          extended_stats: {
-            field: parameters.field
-          }
-        };
-        break;
-    }
+    const aggregations = {
+      [aggregationName]: {
+        extended_stats: {
+          field: 'availableStands'
+        }
+      }
+    };
 
-    const searchQuery = {
+    const elasticSearch = ElasticSearchService.instance;
+
+    elasticSearch.search({
       index: 'lyon',
       type : velovStationStatus.type,
       size : 0,
@@ -192,15 +149,13 @@ module.exports = {
         },
         aggregations: aggregations
       }
-    };
-
-    elasticSearch.search(searchQuery)
-      .then(response => {
+    })
+      .then((response) => {
         res.ok(response.aggregations[aggregationName]);
       })
       .catch(error => {
         sails.log.error(error);
-        res.serverError(500, error);
+        res.send(500, error);
       });
   },
 

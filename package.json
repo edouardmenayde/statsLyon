@@ -32,7 +32,8 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "mocha test/"
   },
   "main": "app.js",
   "repository": {
@@ -41,5 +42,10 @@
   },
   "author": "Edouard MENAYDE",
   "license": "GPLv3",
-  "devDependencies": {}
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "should": "^11.1.1",
+    "supertest": "^2.0.1"
+  }
 }

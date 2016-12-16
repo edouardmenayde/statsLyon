@@ -19,8 +19,4 @@
 
 module.exports.policies = {
 
-  StationController: {
-    import: [true]
-  }
-
 };

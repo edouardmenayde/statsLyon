@@ -7,25 +7,21 @@
 
 const requestHelpers = require('request-helpers');
 const removeAccents  = require('remove-accents');
-const velovStation = sails.config.mappings.indexes.lyon.types.velovStation;
+const velovStation   = sails.config.mappings.indexes.lyon.types.velovStation;
 
 module.exports = {
 
   index: function (req, res) {
+
     const parametersBlueprint = [
-      {
-        param   : 'query',
-        cast    : 'string',
-        required: false
-      },
       {
         param   : 'id',
         cast    : 'integer',
-        required: false
+        required: true
       }
     ];
 
-    var parameters = requestHelpers.secureParameters(parametersBlueprint, req);
+    let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
 
     if (!parameters.isValid()) {
       return res.badRequest('No valid parameters.')
@@ -35,66 +31,25 @@ module.exports = {
 
     const elasticSearch = ElasticSearchService.instance;
 
-    if (parameters.id > 0) {
-      return elasticSearch.search({
-        index: 'lyon',
-        type : velovStation.type,
-        size : 1,
-        body : {
-          query: {
-            match: {
-              stationID: parameters.id
-            }
-          }
-        }
-      })
-        .then(response => {
-          if (response.hits.hits[0]) {
-            return res.ok(response.hits.hits[0]);
-          }
-          res.ok({});
-        })
-        .catch(error => {
-          sails.log.error(error);
-          res.serverError(500, error);
-        });
-    }
-
-    const fields = ['name.folded', 'town.folded'];
-
-    if (Number.isInteger(parseInt(parameters.query))) {
-      fields.push('stationID.whitespaced');
-    }
-
-    elasticSearch.search({
+    return elasticSearch.search({
       index: 'lyon',
       type : velovStation.type,
-      size : 10,
+      size : 1,
       body : {
         query: {
-          bool: {
-            should: [
-              {
-                multi_match: {
-                  type  : 'most_fields',
-                  query : parameters.query,
-                  fields: fields
-                }
-              },
-              {
-                multi_match: {
-                  type  : 'phrase_prefix',
-                  query : parameters.query,
-                  fields: fields
-                }
-              }
-            ]
+          match: {
+            stationID: parameters.id
           }
-        }// lastUpdate:[2016-09-14T14:00:00 TO 2016-09-14T15:05:00] AND stationID=7062
+        }
       }
     })
       .then(response => {
-        res.ok(response.hits.hits);
+
+        if (response.hits.hits[0]) {
+          return res.ok(response.hits.hits[0]);
+        }
+
+        res.ok({});
       })
       .catch(error => {
         sails.log.error(error);
@@ -102,7 +57,7 @@ module.exports = {
       });
   },
 
-  differentTowns: function (req, res) {
+  town: function (req, res) {
     const elasticSearch = ElasticSearchService.instance;
 
     elasticSearch.search({
@@ -111,7 +66,7 @@ module.exports = {
       size : 0,
       body : {
         aggregations: {
-          differentTowns: {
+          towns: {
             terms: {
               field: 'town.untouched',
               size : 50
@@ -121,7 +76,9 @@ module.exports = {
       }
     })
       .then(response => {
-        res.ok(response.aggregations.differentTowns.buckets);
+        const buckets = response.aggregations.towns.buckets;
+        const towns   = buckets.map(bucket => bucket.key);
+        res.ok(towns);
       })
       .catch(error => {
         res.serverError(500, error);
@@ -149,7 +106,6 @@ module.exports = {
 
     if (!Array.isArray(towns)) {
       return res.badRequest('No valid parameters.')
-
     }
 
     const elasticSearch = ElasticSearchService.instance;
@@ -159,8 +115,10 @@ module.exports = {
     towns.forEach(town => {
       const usableTownName         = removeAccents(town).replace(/ /g, '').toLowerCase();
       aggregations[usableTownName] = {
-        match_phrase: {
-          'town.folded': town
+        filter      : {
+          match_phrase: {
+            'town.folded': town
+          }
         },
         aggregations: {
           sum: {

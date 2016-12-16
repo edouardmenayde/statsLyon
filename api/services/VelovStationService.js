@@ -1,29 +1,17 @@
 "use strict";
 
-const async = require('async');
+const ImportService = require('./ImportService');
 
-class VelovStationService {
+class VelovStationService extends ImportService {
 
-  /**
-   * @returns {Object}
-   */
   get config() {
     return sails.config.mappings.indexes.lyon.types.velovStation;
   }
 
-  /**
-   * @returns {Object}
-   */
   get api() {
     return ApiLyonService.instance.velov.stations;
   }
 
-  /**
-   * Returns friendly mapping for ElasticSearch.
-   *
-   * @param {Object} item
-   * @returns {Object}
-   */
   getRequestObject(item) {
     return {
       index: this.config.index,
@@ -47,44 +35,26 @@ class VelovStationService {
     };
   }
 
-  /**
-   * Returns name of the item.
-   *
-   * @param {Object} item
-   * @returns {string}
-   */
   getItemName(item) {
     return item.properties.nom;
   }
 
-  /**
-   * Returns name of the import.
-   *
-   * @returns {string}
-   */
   getImportName() {
     return 'VelovStation';
   }
 
-  /**
-   * Execute the import using the importService.
-   *
-   * @returns {Promise}
-   */
   doImport() {
     return new Promise((resolve, reject) => {
       this.api
         .get('wfs')
         .then(stations => {
-          const importService = new ImportService(this);
-          importService
-            .execute(stations.features)
+          this.execute(stations.features)
             .then(() => {
               resolve();
             })
             .catch(error => {
               sails.log.error(error);
-              reject();
+              reject(error);
             });
         })
         .catch(error => {
