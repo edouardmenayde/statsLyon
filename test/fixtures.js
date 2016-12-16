@@ -35,5 +35,38 @@ module.exports = {
       lat: 45.78473625802337,
       lon: 4.852215476117999
     }
-  }
+  },
+  dataset      : [
+    {
+      createdAt   : (new Date()).toJSON(),
+      stationID   : 20000,
+      name        : 'Test2',
+      address     : '24 rue de la garde',
+      locationHint: "En face de l'hopital",
+      town        : 'Lyon 4eme',
+      stands      : 30,
+      bonus       : true,
+      division    : 'Test',
+      location    : {
+        lat: 45.78473625802337,
+        lon: 4.852215476117999
+      },
+      achievement : ''
+    }, {
+      createdAt   : (new Date()).toJSON(),
+      stationID   : 19200,
+      name        : 'Test2',
+      address     : '01 rue de la garde',
+      locationHint: "En face",
+      town        : 'Lyon 4eme',
+      stands      : 30,
+      bonus       : true,
+      division    : 'Test',
+      location    : {
+        lat: 45.78473625802337,
+        lon: 4.852215476117999
+      },
+      achievement : ''
+    }
+  ]
 };

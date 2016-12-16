@@ -106,7 +106,6 @@ module.exports = {
 
     if (!Array.isArray(towns)) {
       return res.badRequest('No valid parameters.')
-
     }
 
     const elasticSearch = ElasticSearchService.instance;
