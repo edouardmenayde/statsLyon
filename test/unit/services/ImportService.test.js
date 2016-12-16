@@ -1,28 +1,35 @@
-const request  = require('supertest'),
-      assert   = require('chai').assert,
-      utils    = require('../../utils'),
-      fixtures = require('../../fixtures'),
-      dataset  = fixtures.dataset;
+const request       = require('supertest'),
+      assert        = require('chai').assert,
+      utils         = require('../../utils'),
+      fixtures      = require('../../fixtures'),
+      dataset       = fixtures.dataset,
+      ImportService = require('../../../api/services/ImportService');
+
+class StubService extends ImportService {
+
+  getRequestObject(data) {
+    return {
+      index: fixtures.testIndex,
+      type : 'velov_station',
+      body : data
+    }
+  }
+
+  getItemName(item) {
+    return null;
+  }
+
+  getImportName() {
+    return null;
+  }
+
+}
 
 describe('ImportService', function () {
 
   before(function (done) {
-    let importService = new ImportService({
-      getImportName() {
-        return 'velov_station';
-      },
-      getRequestObject(data) {
-        return {
-          index: fixtures.testIndex,
-          type : 'velov_station',
-          body : data
-        }
-      },
-      getItemName() {
-        return null;
-      }
-    });
-    importService.execute(dataset)
+    let stubService = new StubService();
+    stubService.execute(dataset)
       .then(() => {
         done();
       })
