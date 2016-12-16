@@ -1,7 +1,17 @@
-language: node_js
-node_js:
-  - "6"
-  - "iojs"
-jdk: "oraclejdk8"
+language: java
+
+env:
+  - TRAVIS_NODE_VERSION=6
+  - TRAVIS_NODE_VERSION=iojs
+jdk:
+  - oraclejdk8
+
 before_install:
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.1.1.deb && sudo dpkg -i --force-confnew elasticsearch-5.1.1.deb && sudo service elasticsearch restart
+  - nvm use "$TRAVIS_NODE_VERSION"
+
+install:
+ - yarn install
+
+script:
+ - npm test
