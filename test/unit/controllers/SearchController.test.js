@@ -48,9 +48,13 @@ describe('SearchController', function () {
   describe('.search() : /search', function () {
     it('Should return an error', function (done) {
       request(sails.hooks.http.app)
-        .get(`/station/`)
+        .get(`/search/`)
         .set('Content-Type', 'application/json')
-        .expect(400, done);
+        .expect((response) => {
+          assert.isArray(response.body);
+          assert.deepEqual(response.body, []);
+        })
+        .expect(200, done);
     });
   });
 
