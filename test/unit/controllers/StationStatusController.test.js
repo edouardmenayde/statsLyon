@@ -2,7 +2,8 @@ const request       = require('supertest'),
       assert        = require('chai').assert,
       utils         = require('../../utils'),
       fixtures      = require('../../fixtures'),
-      stationStatus = fixtures.stationStatus;
+      stationStatus = fixtures.stationStatus,
+      moment        = require('moment');
 
 function addStationStatus() {
   return function (done) {
@@ -30,7 +31,21 @@ describe('StationStatusController', function () {
 
   before(utils.delay());
 
-  describe('.status(id, query, from, to): GET /status/:id', function () {
+  describe('.status(from, to): GET /status', function () {
+    it('Should return all stations for given range', function (done) {
+      request(sails.hooks.http.app)
+        .get(`/status?from=${moment().subtract(1, 'hours').utc().format()}&to=${moment().utc().format()}`)
+        .set('Content-Type', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect((response) => {
+          assert.isArray(response.body);
+          assert(response.body.length >= 1);
+        })
+        .expect(200, done);
+    });
+  });
+
+  describe('.status(id, from, to): GET /status/:id', function () {
     it('Should return stations status', function (done) {
       request(sails.hooks.http.app)
         .get(`/status/${stationStatus.stationID}?from=${stationStatus.createdAt}&to=${stationStatus.createdAt}`)
@@ -74,15 +89,6 @@ describe('StationStatusController', function () {
     it('Should return an error', function (done) {
       request(sails.hooks.http.app)
         .get(`/status/47?to=${new Date()}`)
-        .set('Content-Type', 'application/json')
-        .expect(400, done);
-    });
-  });
-
-  describe('.status(from, to): GET /status', function () {
-    it('Should return an error', function (done) {
-      request(sails.hooks.http.app)
-        .get(`/status/?from=${new Date()}&to=${new Date()}`)
         .set('Content-Type', 'application/json')
         .expect(400, done);
     });
