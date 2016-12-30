@@ -10,6 +10,83 @@ const velovStationStatus = sails.config.mappings.indexes.lyon.types.velovStation
 
 module.exports = {
 
+  findAll: function (req, res) {
+    const parametersBlueprint = [
+      {
+        param   : 'from',
+        cast    : 'string',
+        required: true,
+      },
+      {
+        param   : 'to',
+        cast    : 'string',
+        required: true,
+      }
+    ];
+
+    let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
+
+    if (!parameters.isValid()) {
+      return res.badRequest('No valid parameters.')
+    }
+
+    parameters = parameters.asObject();
+
+    const elasticSearch = ElasticSearchService.instance;
+
+    return elasticSearch.search({
+      index: 'lyon',
+      type : velovStationStatus.type,
+      size : 0,
+      body : {
+        aggregations: {
+          last_x_minutes: {
+            filter      : {
+              range: {
+                createdAt: {
+                  gte: parameters.from,
+                  lt : parameters.to
+                }
+              }
+            },
+            aggregations: {
+              date_histogram: {
+                date_histogram: {
+                  field   : 'createdAt',
+                  interval: '5m',
+                  order   : {
+                    _key: 'desc'
+                  }
+                },
+                aggregations  : {
+                  docs: {
+                    top_hits: {
+                      size   : 400,
+                      _source: {
+                        includes: [
+                          'availableStands',
+                          'location',
+                          'stationID'
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+      .then(response => {
+        res.ok(response.aggregations.last_x_minutes.date_histogram.buckets);
+      })
+      .catch(error => {
+        sails.log.error(error);
+        res.serverError(500, error);
+      });
+  },
+
   index: function (req, res) {
     const parametersBlueprint = [
       {

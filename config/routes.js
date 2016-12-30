@@ -29,6 +29,7 @@ module.exports.routes = {
   'GET /station/:id'   : 'StationController.index',
 
   'GET /status/availability'        : 'StatusController.availability',
+  'GET /status'                     : 'StatusController.findAll',
   'GET /status/:id/available-stands': 'StatusController.availableStands',
   'GET /status/:id'                 : 'StatusController.index',
   'GET /refreshStatus'              : 'StatusController.update',
