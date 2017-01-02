@@ -55,7 +55,7 @@ module.exports = {
                   field   : 'createdAt',
                   interval: '5m',
                   order   : {
-                    _key: 'desc'
+                    _key: 'asc'
                   }
                 },
                 aggregations  : {
