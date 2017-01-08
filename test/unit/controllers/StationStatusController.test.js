@@ -40,6 +40,11 @@ describe('StationStatusController', function () {
         .expect((response) => {
           assert.isArray(response.body);
           assert(response.body.length >= 1);
+          const firstRecord = response.body[0].docs.hits.hits[0]._source;
+          assert.property(firstRecord, 'availableStands');
+          assert.property(firstRecord, 'location');
+          assert.property(firstRecord, 'name');
+          assert.property(firstRecord, 'stationID');
         })
         .expect(200, done);
     });
