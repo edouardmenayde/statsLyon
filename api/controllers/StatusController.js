@@ -66,6 +66,7 @@ module.exports = {
                         includes: [
                           'availableStands',
                           'location',
+                          'name',
                           'stationID'
                         ]
                       }
