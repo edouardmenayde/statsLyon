@@ -7,6 +7,7 @@
 
 const requestHelpers     = require('request-helpers');
 const velovStationStatus = sails.config.mappings.indexes.lyon.types.velovStationStatus;
+const velovStation       = sails.config.mappings.indexes.lyon.types.velovStation;
 
 module.exports = {
 
@@ -237,6 +238,120 @@ module.exports = {
       });
   },
 
+  mostUsedStations: function (req, res) {
+
+    const parametersBlueprint = [
+      {
+        param   : 'from',
+        cast    : 'string',
+        required: true
+      },
+      {
+        param   : 'to',
+        cast    : 'string',
+        required: true
+      },
+      {
+        param   : 'max',
+        cast    : 'int',
+        required: false,
+        default : 6
+      }
+    ];
+
+    let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
+
+    if (!parameters.isValid()) {
+      return res.badRequest('No valid parameters.')
+    }
+
+    parameters = parameters.asObject();
+
+    const elasticSearch = ElasticSearchService.instance;
+
+    elasticSearch.search({
+      index: 'lyon',
+      type : velovStation.type,
+      size : 400
+    })
+      .then(stations => {
+        const mostUsedStationsPromise = [];
+
+        stations.hits.hits.forEach(hit => {
+          mostUsedStationsPromise.push(
+            elasticSearch.search({
+              index: 'lyon',
+              type : velovStationStatus.type,
+              size : 0,
+              body : {
+                query: {
+                  bool: {
+                    must: [
+                      {
+                        term: {
+                          stationID: hit._source.stationID
+                        }
+                      },
+                      {
+                        range: {
+                          createdAt: {
+                            gte: parameters.from,
+                            lt : parameters.to
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                aggs : {
+                  stats_of_available_stands: {
+                    extended_stats: {
+                      field: 'availableStands'
+                    }
+                  }
+                }
+              }
+            })
+          );
+        });
+
+        Promise
+          .all(mostUsedStationsPromise)
+          .then(results => {
+
+            for (let i = 0; i < results.length; i++) {
+              results[i].hits.hits[0] = stations.hits.hits[i];
+            }
+
+            let sortedResult = results.sort((current, next) => {
+
+              let currentVariance = current.aggregations.stats_of_available_stands.variance / current.hits.hits[0]._source.stands;
+              let nextVariance    = next.aggregations.stats_of_available_stands.variance / next.hits.hits[0]._source.stands;
+
+              if (currentVariance > nextVariance) {
+                return -1; // Current result will be come first
+              }
+
+              if (currentVariance < nextVariance) {
+                return 1; // Next result will come last
+              }
+              return 0; // Current and next won't affect each other
+
+            });
+
+            sortedResult.splice(parameters.max); // delete all non needed result according to required maximum
+
+            res.ok(sortedResult);
+          })
+          .catch(error => {
+            res.negotiate(error);
+          })
+      })
+      .catch(error => {
+        res.negotiate(error);
+      })
+  },
+
   update: function (req, res) {
     VelovStationStatusService.doImport()
       .then(() => {
@@ -245,6 +360,6 @@ module.exports = {
       .catch(error => {
         res.serverError(500, error);
       });
-  }
+  },
 
 };

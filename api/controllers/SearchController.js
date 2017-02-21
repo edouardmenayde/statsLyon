@@ -21,7 +21,7 @@ module.exports = {
 
     let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
 
-    if (!parameters.valid) {
+    if (!parameters.isValid()) {
       return res.ok([]);
     }
 

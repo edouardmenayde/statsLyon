@@ -11,6 +11,21 @@ const velovStation   = sails.config.mappings.indexes.lyon.types.velovStation;
 
 module.exports = {
 
+
+  findAll: function (req, res) {
+    const elasticSearch = ElasticSearchService.instance;
+
+    elasticSearch.search({
+      index: 'lyon',
+      type : velovStation.type,
+      size : 400
+    })
+      .then(response => {
+        res.ok(response.hits.hits);
+      })
+      .catch(res.negotiate);
+  },
+
   index: function (req, res) {
 
     const parametersBlueprint = [

@@ -27,8 +27,10 @@ module.exports.routes = {
   'GET /station/stat'  : 'StationController.stat',
   'GET /station/town'  : 'StationController.town',
   'GET /station/:id'   : 'StationController.index',
+  'GET /station'       : 'StationController.findAll',
 
   'GET /status/availability'        : 'StatusController.availability',
+  'GET /status/most-used-stations'  : 'StatusController.mostUsedStations',
   'GET /status'                     : 'StatusController.findAll',
   'GET /status/:id/available-stands': 'StatusController.availableStands',
   'GET /status/:id'                 : 'StatusController.index',
