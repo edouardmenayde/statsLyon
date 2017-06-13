@@ -37,6 +37,7 @@ class ImportService {
   handleCallback(error, resolve, reject) {
     if (error) {
       sails.log.error(`${this.getLoggingHeader()} Error during import of items at ${this.getLoggingTime()}.`);
+
       return reject(error);
     }
 

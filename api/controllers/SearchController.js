@@ -21,7 +21,7 @@ module.exports = {
 
     let parameters = requestHelpers.secureParameters(parametersBlueprint, req);
 
-    if (!parameters.valid) {
+    if (!parameters.isValid()) {
       return res.ok([]);
     }
 
@@ -31,7 +31,7 @@ module.exports = {
 
     const fields = ['name.folded', 'town.folded'];
 
-    if (Number.isInteger(parseInt(parameters.q))) {
+    if (Number.isInteger(parseInt(parameters.q, 10))) {
       fields.push('stationID.whitespaced');
     }
 

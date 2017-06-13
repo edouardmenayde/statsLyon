@@ -14,20 +14,19 @@ module.exports = {
   },
 
   bootstrap() {
-
     const index    = sails.config.mappings.indexes.lyon.lyon;
     const mappings = sails.config.mappings.indexes.lyon.types;
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.instance
         .indices
-        .create(index, (error, response) => {
+        .create(index, (createError, createResponse) => {
 
-          if (error) {
-            sails.log.verbose(error);
+          if (createError) {
+            sails.log.verbose(createError);
           }
 
-          sails.log.verbose(response);
+          sails.log.verbose(createResponse);
 
           async.each(mappings, (mapping, callback) => {
             this.instance
@@ -42,17 +41,11 @@ module.exports = {
 
                 callback();
               });
-          }, (error) => {
-            // if (error) {
-            //   reject(error);
-            // }
-
+          }, () => {
             resolve();
           });
         });
     });
-
-
   }
 
 };

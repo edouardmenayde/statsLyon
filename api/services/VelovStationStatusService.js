@@ -18,7 +18,7 @@ class VelovStationStatusService extends ImportService {
       type : this.config.type,
       body : {
         createdAt      : new Date(),
-        stationID      : parseInt(item.number),
+        stationID      : parseInt(item.number, 10),
         name           : item.name,
         address        : item.addresse1,
         location       : {
@@ -28,10 +28,12 @@ class VelovStationStatusService extends ImportService {
         locationHint   : item.adresse2,
         town           : item.commune,
         bonus          : item.bonus,
+        /*eslint-disable eqeqeq*/
         available      : item.status == 'OPEN',
-        stands         : parseInt(item.bike_stands),
-        availableStands: parseInt(item.available_bike_stands),
-        availableBikes : parseInt(item.available_bikes),
+        /*eslint-enable eqeqeq*/
+        stands         : parseInt(item.bike_stands, 10),
+        availableStands: parseInt(item.available_bike_stands, 10),
+        availableBikes : parseInt(item.available_bikes, 10),
         banking        : item.banking,
         lastUpdate     : new Date(item.last_update),
         lastUpdateFme  : new Date(item.last_update_fme)
