@@ -11,7 +11,6 @@ const velovStation   = sails.config.mappings.indexes.lyon.types.velovStation;
 
 module.exports = {
 
-
   findAll: function (req, res) {
     const elasticSearch = ElasticSearchService.instance;
 
@@ -93,6 +92,7 @@ module.exports = {
       .then(response => {
         const buckets = response.aggregations.towns.buckets;
         const towns   = buckets.map(bucket => bucket.key);
+
         res.ok(towns);
       })
       .catch(error => {
@@ -128,7 +128,10 @@ module.exports = {
     const aggregations = {};
 
     towns.forEach(town => {
-      const usableTownName         = removeAccents(town).replace(/ /g, '').toLowerCase();
+      const usableTownName = removeAccents(town)
+        .replace(/ /g, '')
+        .toLowerCase();
+
       aggregations[usableTownName] = {
         filter      : {
           match_phrase: {

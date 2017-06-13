@@ -5,12 +5,9 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const requestHelpers = require('request-helpers');
-
 module.exports = {
 
   index: function (req, res) {
-
     const api = ApiLyonService.instance.criter.traffic;
 
     api.get()
@@ -21,7 +18,6 @@ module.exports = {
         sails.log.error(error);
         res.serverError(500, error);
       });
-
   }
 
 };

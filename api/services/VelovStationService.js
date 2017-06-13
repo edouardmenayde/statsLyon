@@ -18,7 +18,7 @@ class VelovStationService extends ImportService {
       type : this.config.type,
       body : {
         createdAt   : new Date(),
-        stationID   : parseInt(item.properties.idstation),
+        stationID   : parseInt(item.properties.idstation, 10),
         name        : item.properties.nom,
         address     : item.properties.addresse1,
         location    : {

@@ -323,10 +323,9 @@ module.exports = {
               results[i].hits.hits[0] = stations.hits.hits[i];
             }
 
-            let sortedResult = results.sort((current, next) => {
-
-              let currentVariance = current.aggregations.stats_of_available_stands.variance / current.hits.hits[0]._source.stands;
-              let nextVariance    = next.aggregations.stats_of_available_stands.variance / next.hits.hits[0]._source.stands;
+            const sortedResult = results.sort((current, next) => {
+              const currentVariance = current.aggregations.stats_of_available_stands.variance / current.hits.hits[0]._source.stands;
+              const nextVariance    = next.aggregations.stats_of_available_stands.variance / next.hits.hits[0]._source.stands;
 
               if (currentVariance > nextVariance) {
                 return -1; // Current result will be come first
@@ -335,8 +334,8 @@ module.exports = {
               if (currentVariance < nextVariance) {
                 return 1; // Next result will come last
               }
-              return 0; // Current and next won't affect each other
 
+              return 0; // Current and next won't affect each other
             });
 
             sortedResult.splice(parameters.max); // delete all non needed result according to required maximum
